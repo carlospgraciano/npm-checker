@@ -1,0 +1,20 @@
+{
+  "name": "npm-check",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": "./cli.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "libnpmsearch": "^2.0.1",
+    "meow": "^5.0.0",
+    "npm": "^6.9.2",
+    "ora": "^3.4.0",
+    "text-table": "^0.2.0"
+  }
+}
