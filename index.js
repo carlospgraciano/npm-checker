@@ -5,8 +5,8 @@ const Table = require('./Table');
 const loader = ora();
 
 module.exports = async (cli) => {
-    let content = null;
     const { input, flags: { directory, name } } = cli;
+    let content = null;
 
     loader.start('Checking...');
 
@@ -26,7 +26,7 @@ module.exports = async (cli) => {
     }
     
     loader.stop();
-    
+
     const table = new Table();
     table.displayTable(content);
 };

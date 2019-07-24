@@ -28,7 +28,7 @@ class Util {
     static async getPKGDependencies(appDir) {
         const pkgFile = await Util.getPackageJSONFile(appDir);
         if(!pkgFile.dependencies) return console.log(chalk.bgRed.bold('NPM package json dependencies not found!'));
-        return pkgFile.JSONdependencies;
+        return pkgFile.dependencies;
     };
     
     static getPackageByName(packages, name) {

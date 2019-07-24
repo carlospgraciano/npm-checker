@@ -1,26 +1,24 @@
-// const table = require('text-table');
-const table = require('table');
+const { table } = require('table');
 const chalk = require('chalk');
-const packages = require('./packages');
 
 class Table {
     constructor() {
         this.table = [];
     }
 
-    getTableRow(payload = {}) {
-        const { local = {}, npm = {} } = payload;
-        if(Object.keys(npm) == 0) return [chalk.bold.red(local.name), chalk.bold.red(local.version), chalk.bold.red(`Package not found in npm library`)];
-        return [chalk.bold.green(local.name), chalk.bold.green(local.version.replace('^', 'v')),  chalk.bold.green(npm.version)];    
+    getTableRow(payload) {
+        const { local, npm = {} } = payload;
+        if(Object.keys(npm).length == 0) return [chalk.bold.red(local.name), chalk.bold.red(local.version), chalk.bold.red(`Package not found in npm library`)];
+        return [chalk.bold.green(local.name), chalk.bold.green(local.version),  chalk.bold.green(npm.version)];    
     };
 
     _getTableContent(content) {
-        console.log("CONTENT", content);
         return content.map((pkg) => this.getTableRow(pkg));
     }
 
     _setTableContent(content) {
-        this.table = [...this.table, this._getTableContent(content)];
+        const tableContent = this._getTableContent(content);
+        this.table = [...this.table, ...tableContent];
     }
 
     _setTableHeaders() {
@@ -49,7 +47,6 @@ class Table {
             }
         };
         
-
         const output = table(this.table, config);
 
         console.log(output);
