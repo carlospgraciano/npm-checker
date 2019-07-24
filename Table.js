@@ -1,48 +1,58 @@
-const table = require('text-table');
+// const table = require('text-table');
+const table = require('table');
 const chalk = require('chalk');
-const Util = require('./Util');
+const packages = require('./packages');
 
 class Table {
     constructor() {
         this.table = [];
-    }    
+    }
 
-    getTableRow(currentPackage, pkg) {
-        if(!currentPackage) return [chalk.bold.red(pkg.name), chalk.bold.red(`Package not found in npm library`)];
-        return [chalk.bold.green(currentPackage.name), chalk.bold.green(pkg.version.replace('^', '')),  chalk.bold.green(currentPackage.version)];    
+    getTableRow(payload = {}) {
+        const { local = {}, npm = {} } = payload;
+        if(Object.keys(npm) == 0) return [chalk.bold.red(local.name), chalk.bold.red(local.version), chalk.bold.red(`Package not found in npm library`)];
+        return [chalk.bold.green(local.name), chalk.bold.green(local.version.replace('^', 'v')),  chalk.bold.green(npm.version)];    
     };
 
-    async _getTableContent(content) {
-        return await Promise.all(content.map(async (pkg) => {
-            const searchedPkgs = await Util.searchPackage(pkg.name, { limit: 1 });
-            const currentPackage = Util.getPackageByName(searchedPkgs, pkg.name);
-            return this.getTableRow(currentPackage, pkg);
-        }));
+    _getTableContent(content) {
+        console.log("CONTENT", content);
+        return content.map((pkg) => this.getTableRow(pkg));
     }
 
-    async _setTableContent(content) {
-        this.table = await this._getTableContent(content);
-    }
-
-    _getTableHeaders() {
-        return [chalk.bold.blue('Package'), chalk.bold.blue('Current package version'), chalk.bold.blue('Latest package version')];
+    _setTableContent(content) {
+        this.table = [...this.table, this._getTableContent(content)];
     }
 
     _setTableHeaders() {
-        const headers = this._getTableHeaders();
+        const headers = [chalk.bold.blue('Package'), chalk.bold.blue('Current package version'), chalk.bold.blue('Latest package version')];
         this.table = [headers, ...this.table];
     }
 
-    async displayTable(content) {
-        // Set table content
-        await this._setTableContent(content);
-
+    displayTable(content) {
         // Set table headers
         this._setTableHeaders();
 
-        const t = table(this.table);
+        // Set table content
+        this._setTableContent(content);
 
-        console.log(t);
+        const config = { 
+            columns: {
+                0: {
+                  alignment: 'center',
+                },
+                1: {
+                  alignment: 'center',
+                },
+                2: {
+                  alignment: 'center',
+                }
+            }
+        };
+        
+
+        const output = table(this.table, config);
+
+        console.log(output);
     }
 }
 

@@ -5,15 +5,23 @@ const handleCLI = require('.');
 
 const cli = meow(`
         Usage
-        $ npm-check [COMMAND]
+        $ npm-check
+
+        Inputs
+        i Check for installed packages
+        ni Check for non-installed packages
+        s Check for a specific package
 
         Options
-        --directory, -d  Your project root directory, where your package.json is located
+        --directory, -d  Your project root directory, where your package file is located
+        --name, -n Name of a specific package
 
         Examples
         $ npm-check
         $ npm-check --directory ./someFolder
         $ npm-check -d ./someFolder
+        $ npm-check n-i --directory ./someFolder
+        $ npm-check n-i -d ./someFolder
 `, {
     flags: {
         directory: {
@@ -21,6 +29,11 @@ const cli = meow(`
             alias: 'd',
             default: process.cwd(),
         },
+        name: {
+            type: 'string',
+            alias: 'n',
+            default: '',
+        }
     }
 });
 

@@ -25,26 +25,10 @@ class Util {
         }
     };
     
-    static getPKGDependencies(pkgFile) {
-        const { dependencies } = pkgFile;
-        if(!dependencies) return console.log(chalk.bgRed.bold('NPM package json dependencies not found!'));
-        return dependencies;
-    };
-    
-    static getInstalledPkgs(nodeModuleDir, pkgDependencies) {
-        const installedPkgs = nodeModuleDir.filter((pkg) => Object.keys(pkgDependencies).includes(pkg));
-        const pkgs = installedPkgs.map((pkg) => {
-            if(pkgDependencies[pkg]) return { name: pkg, version: pkgDependencies[pkg] };
-        });
-        return pkgs;
-    };
-    
-    static getNonInstalledPkgs(installedPkgs, pkgDependencies) {
-        const nonInstalledPkgs = Object.keys(pkgDependencies).filter(dependency => !installedPkgs.some((pkg) => pkg.name == dependency));
-        const pkgs = nonInstalledPkgs.map((pkg) => {
-            if(pkgDependencies[pkg]) return { name: pkg, version: pkgDependencies[pkg] };
-        });
-        return pkgs;
+    static async getPKGDependencies(appDir) {
+        const pkgFile = await Util.getPackageJSONFile(appDir);
+        if(!pkgFile.dependencies) return console.log(chalk.bgRed.bold('NPM package json dependencies not found!'));
+        return pkgFile.JSONdependencies;
     };
     
     static getPackageByName(packages, name) {
