@@ -3,19 +3,19 @@ const ora = require('ora');
 const packages = require('./packages');
 const Table = require('./Table');
 const loader = ora();
+const Util = require('./Util');
 
 module.exports = async (cli) => {
     const { input, flags: { directory, name } } = cli;
     let content = null;
 
-    loader.start('Checking...');
+    // loader.start('Checking...');
 
     const type = input[0];
-
     switch(type) {
-        // case 's':
-        //     content = await packages.getPackageInfo(name);
-        //     break;
+        case 's':
+            content = await packages.getPackageInfo(name);
+            break;
         case 'ni':
             content = await packages.getNonInstalledPkgs(directory);
             break;
@@ -25,8 +25,8 @@ module.exports = async (cli) => {
             break;
     }
     
-    loader.stop();
+    // loader.stop();
 
-    const table = new Table();
-    table.displayTable(content);
+    // const table = new Table();
+    // table.displayTable(content);
 };

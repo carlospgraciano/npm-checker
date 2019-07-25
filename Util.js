@@ -38,6 +38,23 @@ class Util {
     static async searchPackage(pkgName, opts) {
         return await search(pkgName, opts);
     };
+    
+    static has(object, path) {
+        this.validateType(object, 'Object');
+        this.validateType(path, 'String');
+
+        let accumulator = object;
+        for (const splitPath of path.split('.')) {  
+            const includes = Object.keys(accumulator).includes(splitPath);
+            accumulator = (includes) ? accumulator[splitPath] : null;
+            if (accumulator === null) break;
+        }
+        return (accumulator !== null) ? true : false;
+    };
+
+    static validateType(value, type) {
+        if (value.constructor.name !== type) throw new Error(`[npm-check] Expecting ${type}, instead received ${value.constructor.name}`);
+    };
 };
 
 module.exports = Util;
