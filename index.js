@@ -3,6 +3,7 @@ const ora = require('ora');
 const Table = require('./Table');
 const { getPackageSearch, getNonInstalledPkgs, getInstalledPkgs } = require('./packages');
 const loader = ora();
+const Util = require('./Util');
 
 module.exports = async (cli) => {
     const { input, flags: { directory, name } } = cli;
@@ -11,7 +12,6 @@ module.exports = async (cli) => {
     loader.start('Checking...');
 
     const type = input[0];
-
     switch(type) {
         case 's':
             content = await getPackageSearch(name);

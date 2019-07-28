@@ -4,7 +4,7 @@ const getInstalledPkgs = async (appDir) => {
     const dependencies = await Util.getPKGDependencies(appDir);
     const nodeModuleDir = await Util.getNodeModulesDir(appDir);
     const installedLocalPkgs = nodeModuleDir.reduce((acc, nModule) => {
-        if (Object.keys(dependencies).includes(nModule)) {
+        if (Util.has(dependencies, nModule)) {
             acc = [...acc, { name: nModule, version: dependencies[nModule] }];
         }
         return acc;
@@ -36,7 +36,8 @@ const getPkgs = async (pkgs) => {
 
 const getPackageInfo = async (name) => {
     const searchedPkgs = await Util.searchPackage(name, { limit: 1 });
-    return Util.getPackageByName(searchedPkgs, name);
+    const package = searchedPkgs[0];
+    return { name: package.name, version: package.version };
 };
 
 const getPackageSearch = async (pkgName) => {
