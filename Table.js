@@ -1,5 +1,6 @@
 const { table } = require('table');
 const chalk = require('chalk');
+const Util = require('./Util');
 
 class Table {
     constructor() {
@@ -7,8 +8,11 @@ class Table {
     }
 
     getTableRow(payload) {
-        const { local, npm = {} } = payload;
-        if(Object.keys(npm).length == 0) return [chalk.bold.red(local.name), chalk.bold.red(local.version), chalk.bold.red(`Package not found in npm library`)];
+        const { local = {}, npm = {} } = payload;
+        
+        if(Util.isEmpty(npm)) return [chalk.bold.red(local.name), chalk.bold.red(local.version), chalk.bold.red(`Package not found in npm library`)];
+        else if (Util.isEmpty(local)) return [chalk.bold.green(npm.name), chalk.bold.red("Local version not found"), chalk.bold.green(npm.version)];
+
         return [chalk.bold.green(local.name), chalk.bold.green(local.version),  chalk.bold.green(npm.version)];    
     };
 

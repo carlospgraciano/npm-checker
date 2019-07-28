@@ -10,7 +10,7 @@ class Util {
             const data = await readFile(`${appDir}/package.json`);
             return JSON.parse(data);
         } catch(err) {
-            console.log(chalk.bgRed.bold('NPM package json file not found!'));
+            console.log(chalk.red.bold('NPM package json file not found!'));
             process.exit(0);
         }
     };
@@ -20,7 +20,7 @@ class Util {
             const readDir = util.promisify(fs.readdir);
             return await readDir(`${appDir}/node_modules`);
         } catch(err) {
-            console.log(chalk.bgRed.bold('Node module folder not found!'));
+            console.log(chalk.red.bold('Node module folder not found!'));
             process.exit(0);
         }
     };
@@ -37,6 +37,19 @@ class Util {
 
     static async searchPackage(pkgName, opts) {
         return await search(pkgName, opts);
+    };
+
+    static isEmpty(value) {
+        switch(value.constructor.name) {
+            case 'Object':
+                return (Object.keys(value).length === 0);
+            case 'Array':
+                return (value.length === 0);
+            case 'String':
+                return (!value);
+            default:
+                return true;
+        }
     };
 };
 

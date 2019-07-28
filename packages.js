@@ -39,8 +39,13 @@ const getPackageInfo = async (name) => {
     return Util.getPackageByName(searchedPkgs, name);
 };
 
+const getPackageSearch = async (pkgName) => {
+    const npm = await getPackageInfo(pkgName);
+    return [{ local: {}, npm, }];
+};
+
 module.exports = {
     getInstalledPkgs,
     getNonInstalledPkgs,
-    getPackageInfo,
+    getPackageSearch
 };
