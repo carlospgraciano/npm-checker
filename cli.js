@@ -5,7 +5,7 @@ const handleCLI = require('.');
 
 const cli = meow(`
         Usage
-        $ npm-check
+        $ npm-check <inputs> [options]
 
         Inputs
         i Check for installed packages

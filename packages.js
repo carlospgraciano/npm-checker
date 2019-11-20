@@ -1,37 +1,39 @@
 const Util = require('./Util');
 
-const getInstalledPkgs = async (appDir) => {
-    const dependencies = await Util.getPKGDependencies(appDir);
-    const nodeModuleDir = await Util.getNodeModulesDir(appDir);
-    const installedLocalPkgs = nodeModuleDir.reduce((acc, nModule) => {
-        if (Util.has(dependencies, nModule)) {
-            acc = [...acc, { name: nModule, version: dependencies[nModule] }];
-        }
-        return acc;
-    }, []);
-    const installedPkgs = await getPkgs(installedLocalPkgs);
-    return Promise.all(installedPkgs);
+const _reduceDependencies = function(dependencies, cb, defaultValue = []) {
+    return Object.keys(dependencies).reduce((...args) => cb(...args), defaultValue);
 };
 
-const getNonInstalledPkgs = async (appDir) => {
-    const dependencies = await Util.getPKGDependencies(appDir);
-    const installedPkgs = await getInstalledPkgs(appDir);
-    const nonInstalledLocalPkgs = Object.keys(dependencies).reduce((acc, dependency) => {
-        if (!installedPkgs.some((pkg) => pkg.local.name === dependency)) {
-            acc = [...acc, { name: dependency, version: dependencies[dependency] }];
-        }
-        return acc;
-    }, []);
-    const nonInstalledPkgs = await getPkgs(nonInstalledLocalPkgs);
-    return Promise.all(nonInstalledPkgs);
+const _hasDependencyInstalled = function(dependency, nodeModuleDir) {
+    return nodeModuleDir.find((pkg) => pkg === dependency) !== undefined;
 };
 
-const getPkgs = async (pkgs) => {
-    return pkgs.map(async ({ name, version }) => {
-        const local = { name, version };
-        const npm = await getPackageInfo(name);
-        return { local, npm };
+const _getInstalledPkgs = function(dependencies, nodeModuleDir) {
+    return _reduceDependencies(dependencies, (acc, dependency) => {
+        if (_hasDependencyInstalled(dependency, nodeModuleDir)) {
+            return [...acc, { name: dependency, version: dependencies[dependency] }];
+        }
+        return acc;
     })
+};
+
+const _getNonInstalledPkgs = function(dependencies, nodeModuleDir) {
+    return _reduceDependencies(dependencies, (acc, dependency) => {
+        if (!_hasDependencyInstalled(dependency, nodeModuleDir)) {
+            return [...acc, { name: dependency, version: dependencies[dependency] }];
+        }
+        return acc;
+    });
+};
+
+const _getPkgs = async function(pkgs) {
+    let pkgsList = [];
+    for await(const pkg of pkgs) {
+        const { name, version } = pkg;
+        const npm = await getPackageInfo(name);
+        pkgsList = [...pkgsList, { local: { name, version }, npm }];
+    }
+    return pkgsList;
 };
 
 const getPackageInfo = async (name) => {
@@ -45,8 +47,13 @@ const getPackageSearch = async (pkgName) => {
     return [{ local: {}, npm, }];
 };
 
+const getPackagesList = async function(dependencies, nodeModuleDir) {
+    const installedPkgs = _getInstalledPkgs(dependencies, nodeModuleDir);
+    const nonInstalledPkgs = _getNonInstalledPkgs(dependencies, nodeModuleDir);
+    return await _getPkgs([...installedPkgs, ...nonInstalledPkgs]);
+};
+
 module.exports = {
-    getInstalledPkgs,
-    getNonInstalledPkgs,
+    getPackagesList,
     getPackageSearch
 };
